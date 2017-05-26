@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="keywords" content="" />
+        <meta name="description" content="" />
+        <meta name="viewport" content="width=device-width,inital-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+        <meta name="renderer" content="webkit">
+        <title>基本弹层layer</title>
+        <link rel="stylesheet" href="../css/page/global.css" />
+
+    </head>
+
+    <body>
+
+        <button id="btn-alert">点我弹出layer-带有基本样式及动画</button>
+
+        <div>可以继承ui.layer自定义业务弹层类，也可以直接实例化调用。</div>
+
+        <div>本demo展示继承方式调用</div>
+
+        <script src="../js/widget/lib/requirejs2.1.22.min.js"></script>
+        <script src="../js/global.js"></script>
+
+        <script>
+            requirejs(['$','libinherit/extendClass','COREUI/ui.layer'],function($,ExtendClass,Layer){
+
+                //继承方式 - 自定义业务弹层
+                //config同ui.layer.js中说明
+                function MyLayer(config){
+                    MyLayer.superclass.constructor.call(this,config);
+
+                    //自己操作
+                    this.layer.css('text-align','center');
+                    //内容填充
+                    var tpl = '<div style="line-height: 24px;">基本层</div><a href="javascript:;" class="js-close">关闭</a>';
+                    this.setContent(tpl);
+                }
+                ExtendClass(MyLayer,Layer);
+
+                //实例化
+                var _mylayer = new MyLayer();
+
+                _mylayer.hideaftercal.add(function(){
+                    console.log('隐藏');
+                });
+
+                $('#btn-alert').on('click',function(){
+                    _mylayer.show();
+                });
+            });
+        </script>
+
+    </body>
+</html>

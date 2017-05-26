@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="keywords" content="" />
+        <meta name="description" content="" />
+        <meta name="viewport" content="width=device-width,inital-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+        <meta name="renderer" content="webkit">
+        <title>io使用demo</title>
+        <link rel="stylesheet" href="../css/page/global.css" />
+
+    </head>
+
+    <body>
+
+        <p>
+            1. 支持接口队列请求
+        </p>
+        <p>
+            2. 支持接口数据缓存
+        </p>
+        <p>
+            3. 支持接口统一业务错误及其他情况处理
+        </p>
+
+        <script src="../js/widget/lib/requirejs2.1.22.min.js"></script>
+        <script src="../js/global.js"></script>
+
+        <script>
+        /**
+         * 各自业务工程里面建立一个common/storage.js。下面是简单的例子
+         * @type {[type]}
+         */
+        define('common/storage',['libio/storage'],function(Storage){
+            /**
+             * 本地存储对象所属组，命名可自行修改。默认是ZMRDLB
+             * @type {String}
+             */
+            // Storage.groupname = 'myprojectname';
+
+            return {
+                listdata: Storage.create({
+                    maxage: '1D', //保存1天
+                    key: 'listdata'
+                }),
+                listdatatwo: Storage.create({
+                    maxage: '0.1H', //保存0.1小时
+                    key: 'listdatatwo'
+                })
+            };
+        });
+        /**
+         * 各自业务工程里面建立一个common/model.js。下面是简单的例子
+         * @type {[type]}
+         */
+        define('common/model',['libio/ioconfig','libio/interio','common/storage'],function($ioconfig,$interio,Storage){
+            /**
+             * 统一处理未登录
+             */
+            $ioconfig.login.filter = function(result){
+                return result.code == 'A0002';
+            };
+            $ioconfig.login.url = 'http://baidu.com/';
+
+            /**
+             * 所有接口的io业务错误统一处理
+             */
+            $ioconfig.fail.filter = function(result) {
+                return result.code != 'A0001';
+            };
+            $ioconfig.iocall.fail = function(result){
+                _APP.toast.show(result.errmsg || '网络错误');
+            };
+            $ioconfig.iocall.error = function(jqXHR, textStatus, errorThrown){
+                _APP.Toast.show(textStatus || '网络错误');
+            };
+
+            $ioconfig.ioargs.beforeSend = function(){
+                _APP.Loading.show();
+            };
+            $ioconfig.iocall.complete = function(){
+                _APP.Loading.hide();
+            }
+
+            $ioconfig.ioargs.crossDomain = true;
+            /**
+             * 数据接口配置
+             */
+            var basehost = 'http://127.0.0.1:8000';
+
+            /**
+             * url格式化
+             * @example buildUrl('/rer/{sex}/fewr/{id}',{sex:'aa',id:'11'})
+             *          返回：/rer/aa/fewr/11
+             */
+            function buildUrl(url,data,isencode){
+                var reg = /\{([a-zA-A]+)\}/g;
+                return url.replace(reg, function (all, key) {
+                    return isencode? encodeURIComponent(data[key]): data[key];
+                });
+            }
+            /**
+             * 请求数据层model
+             * @param {Object} ioargs 传入的参数同$ioconfig.ioargs格式一致，一般是：
+                 * {
+                 * 	   data: {}
+                 * }
+               @param {JSON} *iocall 传入的参数同$ioconfig.iocall格式一致，一般是：
+               * {
+               *     success
+               *     complete
+               *     //以下已经有统一处理，如果想覆盖则自行传入
+               *     error
+               *     fail
+               * }
+               @param {Object} urlData 针对url里面有{替换参数名}的情况，传入的键值对应数据
+             */
+            return {
+                /**
+                 * 获取项目文件目录结构
+                 * urlData: {
+                 *     id
+                 * }
+                 */
+                main: function(ioargs,iocall,urlData){
+                    var _url = buildUrl(basehost+'/tracer/main/trace/{id}',urlData,true);
+                    $interio.transRequest($.extend({
+                        url: _url,
+                        type:'GET'
+                    },ioargs),iocall);
+                },
+                /**
+                 * 列表数据
+                 */
+                listdata: function(ioargs,iocall){
+                    $interio.transRequest($.extend({
+                        url: basehost+'/listdata',
+                        type:'POST',
+                        /**
+                         * 如果想对接口的数据进行缓存，则进行以下配置
+                         *
+                         * 数据缓存，暂不区分接口请求参数
+                         * @type {Object}
+                         */
+                        customconfig: {
+                            storage: Storage.listdata //配置缓存对象，必填
+                            //如果请求该接口前，要清楚所有本地缓存，则添加此配置
+                            //如：当前接口是用户登录/退出接口，则清除所有敏感数据
+                            // clearall: true
+                        }
+                    },ioargs),iocall);
+                },
+
+                //为了测试，一般不要
+                $interio: $interio,
+                basehost: basehost
+            };
+        });
+
+
+            requirejs(['CORECOMMON/base.view','common/model'],function(BaseView,Model){
+                BaseView.register({
+                    _init: function(){
+                        /**
+                         * 普通单个请求
+                         *      这个配置说明加入全局网络主队列
+                             * customconfig: {
+                                 queue: true
+                             }
+                         */
+                        Model.listdata({
+                            data: {'name': 'zmrdlb'}
+                            // customconfig: {
+                            //     queue: true
+                            // }
+                        },{
+                            success: function(data){
+                                console.log(data);
+                            }
+                            // fail: function(){
+                            //     console.log('覆盖统一fail处理');
+                            // },
+                            // error: function(){
+                            //     console.log('覆盖统一error处理');
+                            // },
+                            // complete: function(){
+                            //     console.log('完成');
+                            // }
+                        });
+
+                        Model.main({
+                            data: {'name': 'zmrdlb'}
+                            // customconfig: {
+                            //     queue: true
+                            // }
+                        },{
+                            error: function(){
+                                console.log('覆盖统一error处理');
+                            }
+                        },{
+                            id: '1002'
+                        });
+
+
+                        //单独声明队列，接口按照队列顺序加载
+                        // Model.$interio.transQueueRequest([{
+                        //     ioargs: {
+                        //         url: Model.basehost+'/listdatas',
+                        //         method:'POST'
+                        //     },
+                        //     iocall: {
+                        //         error: function(){ //此接口本来什么都不返回，所以把默认错误提示覆盖了
+                        //             console.log('/listdatas error');
+                        //         }
+                        //     }
+                        // },{
+                        //     ioargs: {
+                        //         url: Model.basehost+'/listdata',
+                        //         method:'POST'
+                        //     },
+                        //     iocall: {
+                        //         success: function(data){
+                        //             console.log(data);
+                        //         }
+                        //     }
+                        // }], {
+                        //     complete: function(){
+                        //         console.log('队列全部完成')
+                        //     }
+                        // });
+                    }
+                });
+            });
+        </script>
+
+    </body>
+</html>

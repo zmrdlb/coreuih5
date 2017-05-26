@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="keywords" content="" />
+        <meta name="description" content="" />
+        <meta name="viewport" content="width=device-width,inital-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+        <meta name="renderer" content="webkit">
+        <title>alert测试页</title>
+        <link rel="stylesheet" href="../css/page/global.css" />
+        <style>
+            button {
+                margin: 10px 20px;
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <p>
+            点击按钮弹出alert
+        </p>
+
+        <button id="btn-all">传入所有自定义参数</button>
+
+        <button id="btn-single">简单调用</button>
+
+        <script src="../js/widget/lib/requirejs2.1.22.min.js"></script>
+        <script src="../js/global.js"></script>
+
+        <script>
+            requirejs(['$','CORECOMMON/base.view'],function($,BaseView){
+                BaseView.register({
+                    _init: function(){
+                        $('#btn-all').on('click',function(){
+                            _APP.Alert.show({
+                                title: '系统提示',
+                                content: '您还未登陆',
+                                ok: '好的'
+                            },{
+                                ok: function(){
+                                    console.log('点击好的');
+                                }
+                            });
+                        });
+
+                        $('#btn-single').on('click',function(){
+                            _APP.Alert.show({
+                                content: '您还未登陆'
+                            });
+                        });
+                    }
+                });
+            });
+        </script>
+
+    </body>
+</html>

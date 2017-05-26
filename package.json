@@ -1,0 +1,24 @@
+{
+  "name": "coreuih5",
+  "version": "1.0.0",
+  "description": "公司做一套产品的时候，会形成一套独特的设计风格，交互风格，那么我们可以把这些几乎各个项目公用的js+css提取成一个：业务核心库（暂时这么叫吧，不知道专业术语叫成什么样）。\r 本项目只是提供一个demo，命名为coreuih5(为什么加ui呢？因为要说明里面是有css设计的)",
+  "main": "Gruntfile.js",
+  "dependencies": {
+    "multiparty": "^4.1.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zmrdlb/coreuih5.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zmrdlb/coreuih5/issues"
+  },
+  "homepage": "https://github.com/zmrdlb/coreuih5#readme"
+}

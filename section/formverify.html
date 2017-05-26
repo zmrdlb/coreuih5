@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="keywords" content="" />
+        <meta name="description" content="" />
+        <meta name="viewport" content="width=device-width,inital-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+        <meta name="renderer" content="webkit">
+        <title>form表单验证</title>
+        <link rel="stylesheet" href="../css/page/global.css" />
+
+        <style>
+            body {
+                font-size: 16px;
+            }
+            label {
+                margin-right: 20px;
+            }
+            li {
+                padding: 10px;
+            }
+            .g-input {
+                padding: 5px;
+                border: 1px solid #000;
+                line-height: 20px;
+                height: 20px;
+                width: 200px;
+            }
+            .g-input.error {
+                border-color: red;
+            }
+            .msg-error {
+                color: red;
+                margin-left: 20px;
+            }
+            #btn-submit {
+                position: fixed;
+                top: 100px;
+                right: 100px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <p>
+            “基本验证”： verify属性只要是以下几种枚举，都可以有的验证特性：
+        </p>
+        <p>
+            'string' | 'number'
+        </p>
+        <p>
+            请打开开发者工具控制台，全部验证成功会有惊喜
+        </p>
+        <div id="con-form">
+              <ul>
+                   <li>
+                       <label>基本验证-必填</label>
+                       <input class="g-input" placeholder="必填" type="text" verify="string" required name="name" errornodeselector="#msg-error-name" />
+                       <span class="msg-error" id="msg-error-name">
+                       </span>
+                   </li>
+                   <li>
+                       <label>基本验证-接受回调-必填-success,fail</label>
+                       <input class="g-input" placeholder="接受回调" type="text" verify="string" required name="cal" errornodeselector="#msg-error-cal" />
+                       <span class="msg-error" id="msg-error-cal">
+                       </span>
+                   </li>
+                   <li>
+                        <label>基本验证-自定义正则</label>
+                        <input class="g-input" placeholder="必须包含zmrdlb" type="text" verify="string" name="pattern" errornodeselector="#msg-error-pattern" />
+                        <span class="msg-error" id="msg-error-pattern">
+                        </span>
+                    </li>
+                   <li>
+                        <label>字符串-最大最小长度限制</label>
+                        <input class="g-input" placeholder="字符串最小2最大10" type="text" verify="string" name="lenlimit" minlength="2" maxlength="10" errornodeselector="#msg-error-lenlimit" />
+                        <span class="msg-error" id="msg-error-lenlimit">
+                        </span>
+                    </li>
+                   <li>
+                       <label>字符串-手机</label>
+                       <input class="g-input" placeholder="手机" type="text" verify="string" verifytype="mobile" name="mobile" errornodeselector="#msg-error-mobile" />
+                       <span class="msg-error" id="msg-error-mobile">
+                       </span>
+                   </li>
+                   <li>
+                       <label>字符串-邮箱</label>
+                       <input class="g-input" placeholder="邮箱" type="text" verify="string" verifytype="email" name="email" errornodeselector="#msg-error-email" />
+                       <span class="msg-error" id="msg-error-email">
+                       </span>
+                   </li>
+                   <li>
+                       <label>字符串-中文</label>
+                       <input class="g-input" placeholder="中文" type="text" verify="string" verifytype="chinese" name="chinese" errornodeselector="#msg-error-chinese" />
+                       <span class="msg-error" id="msg-error-chinese">
+                       </span>
+                   </li>
+                   <li>
+                       <label>字符串-英文</label>
+                       <input class="g-input" placeholder="英文" type="text" verify="string" verifytype="english" name="english" errornodeselector="#msg-error-english" />
+                       <span class="msg-error" id="msg-error-english">
+                       </span>
+                   </li>
+                   <li>
+                       <label>字符串-身份证</label>
+                       <input class="g-input" placeholder="身份证" type="text" verify="string" verifytype="idcard" name="idcard" errornodeselector="#msg-error-idcard" />
+                       <span class="msg-error" id="msg-error-idcard">
+                       </span>
+                   </li>
+                   <li>
+                       <label>字符串-url地址</label>
+                       <input class="g-input" placeholder="url地址" type="text" verify="string" verifytype="url" name="url" errornodeselector="#msg-error-url" />
+                       <span class="msg-error" id="msg-error-url">
+                       </span>
+                   </li>
+                   <li>
+                       <label>字符串-银行卡号</label>
+                       <input class="g-input" placeholder="银行卡号" type="text" verify="string" verifytype="cardno" name="cardno" errornodeselector="#msg-error-cardno" />
+                       <span class="msg-error" id="msg-error-cardno">
+                       </span>
+                   </li>
+                   <li>
+                       <label>数字-默认包含整数或者小数</label>
+                       <input class="g-input" placeholder="数字" type="text" verify="number" name="number" errornodeselector="#msg-error-number" />
+                       <span class="msg-error" id="msg-error-number">
+                       </span>
+                   </li>
+                   <li>
+                       <label>数字-必须是整数</label>
+                       <input class="g-input" placeholder="整数" type="text" verify="number" name="integer" errornodeselector="#msg-error-integer" />
+                       <span class="msg-error" id="msg-error-integer">
+                       </span>
+                   </li>
+                   <li>
+                       <label>数字-最多2位小数</label>
+                       <input class="g-input" placeholder="最多2位小数" type="text" verify="number" name="floattwo" errornodeselector="#msg-error-floattwo" />
+                       <span class="msg-error" id="msg-error-floattwo">
+                       </span>
+                   </li>
+                   <li>
+                       <label>数字-最大最小值</label>
+                       <input class="g-input" placeholder="最小值是-4，最大值20" type="text" verify="number" name="numminmax" errornodeselector="#msg-error-numminmax" />
+                       <span class="msg-error" id="msg-error-numminmax">
+                       </span>
+                   </li>
+              </ul>
+              <button id="btn-submit">提交</button>
+         </div>
+
+        <script src="../js/widget/lib/requirejs2.1.22.min.js"></script>
+        <script src="../js/global.js"></script>
+
+        <script>
+            requirejs(['$','CORECOMMON/base.view','libform/formverify'],function($,BaseView,FormVerify){
+                BaseView.register({
+                    _init: function(){
+                       //表单验证
+                       var formverify = FormVerify.register($('#con-form'),{
+                           cal: {
+                               success: function(){
+                                   this.errnode.append('-验证成功回调');
+                               },
+                               fail: function(){
+                                   this.errnode.append('-验证失败回调');
+                               }
+                           },
+                           pattern: {
+                               pattern: /zmrdlb/
+                           },
+                           mobile: {
+                               errmsg: {
+                                   verifytype: '手机格式不正确'
+                               }
+                           },
+                           email: {
+                               errmsg: {
+                                   verifytype: '邮箱格式错误'
+                               }
+                           },
+                           chinese: {
+                               errmsg: {
+                                   verifytype: '中文格式不正确'
+                               }
+                           },
+                           english: {
+                               errmsg: {
+                                   verifytype: '英文文格式不正确'
+                               }
+                           },
+                           idcard: {
+                               errmsg: {
+                                   verifytype: '身份证格式不正确'
+                               }
+                           },
+                           url: {
+                               errmsg: {
+                                   verifytype: 'url格式不正确'
+                               }
+                           },
+                           cardno: {
+                               errmsg: {
+                                   verifytype: '银行卡号格式不正确'
+                               }
+                           },
+                           integer: {
+                               isinteger: true,
+                           },
+                           floattwo: {
+                               decimaldigits: 2
+                           },
+                           numminmax: {
+                               min: -4,
+                               max: 20
+                           }
+                       });
+
+                       //点击提交
+                       $('#btn-submit').on('click',function(){
+                           var result = formverify.verify();
+                           if(result.err){
+                               _APP.Toast.show('输入框有错');
+                           }else{
+                               console.log(result.data);
+                           }
+                       });
+                    }
+                });
+            });
+        </script>
+
+    </body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="keywords" content="" />
+        <meta name="description" content="" />
+        <meta name="viewport" content="width=device-width,inital-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+        <meta name="renderer" content="webkit">
+        <title>storage存储</title>
+        <link rel="stylesheet" href="../css/page/global.css" />
+        <style>
+            input,button,p {
+                margin: 10px 20px;
+            }
+            textarea {
+                width: 400px;
+                height: 200px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <p>
+            采用localStorage进行数据存储，与原生不同的是，新增了过期时间控制
+        </p>
+        <p>
+            打开控制台查看数据
+        </p>
+        <p style="color: red;">
+            如果存储的数据过期了，则输出null
+        </p>
+        <p>
+            点击按钮操作后，可以打开控制台，实时查看localStorage的存储结果
+        </p>
+        <p>
+            过期时间说明：
+        </p>
+        <p>
+            3个月：3M
+            1天: 1D；
+            0.4天: 0.4D；注意：如果是小数，只运行1位小数
+            2小时：2H
+        </p>
+
+        <div>
+            键值：<input type="text" id="keyname" value="ownerdata" />
+        </div>
+        <div>
+            过期时间: <input type="text" id="outdate" value="0.1H" placeholder="1D,0.5M 注意：只支持一位小数" />
+        </div>
+        <div>
+            数据：
+            <textarea id="mydata">
+                {"name":"zmrdlb","sex":0}
+            </textarea>
+        </div>
+        <p style="color: red">
+            注意：第三个按钮点击前，必须点击第一个按钮
+        </p>
+        <div>
+            <button id="createStorage">创建存储对象</button>
+            <button id="setStorage">设置当前项数据</button>
+            <button id="getStorage">获取当前项数据</button>
+            <button id="removeStorage">删除当前项数据</button>
+            <button id="clearStorage">全部清除</button>
+        </div>
+
+        <script src="../js/widget/lib/requirejs2.1.22.min.js"></script>
+        <script src="../js/global.js"></script>
+
+        <script>
+            requirejs(['$','CORECOMMON/base.view','libio/storage'],function($,BaseView,Storage){
+                BaseView.register({
+                    _init: function(){
+
+                        var nodes = {
+                            keyname: $('#keyname'),
+                            outdate: $('#outdate'),
+                            mydata: $('#mydata')
+                        }
+
+                        var _storageMap = {};
+
+                        function create(){
+                            var keyname = nodes.keyname.val().trim();
+                            if(_storageMap[keyname]){
+                                _APP.Toast.show(keyname+'键值的数据存储对象已经创建');
+                            }else{
+                                _storageMap[keyname] = Storage.create({
+                                    maxage: nodes.outdate.val().trim(),
+                                    key: keyname
+                                });
+                                _APP.Toast.show(keyname+'键值的数据存储对象创建成功');
+                            }
+                        }
+
+                        function warn(){
+                            console.log('请在开发人员工具中查看localStorage的存储数据情况');
+                        }
+
+                        $('#createStorage').on('click',function(){
+                            create();
+                        });
+
+                        $('#setStorage').on('click',function(){
+                            var keyname = nodes.keyname.val().trim();
+                            var value = JSON.parse(nodes.mydata.val().trim());
+                            _storageMap[keyname].set(value);
+                            console.warn('可以尝试在过期时间后，尝试获取当前数据项，查看返回结果');
+                            warn();
+                        });
+
+                        $('#getStorage').on('click',function(){
+                            console.log('获取存储的数据');
+                            var keyname = nodes.keyname.val().trim();
+                            var data = _storageMap[keyname].get();
+                            console.log(data);
+                            if(data == null){
+                                console.warn('数据已过期');
+                                warn();
+                            }
+                        });
+
+                        $('#removeStorage').on('click',function(){
+                            var keyname = nodes.keyname.val().trim();
+                            _storageMap[keyname].remove();
+                            warn();
+                        });
+
+                        $('#clearStorage').on('click',function(){
+                            Storage.clear();
+                            warn();
+                        });
+
+                    }
+                });
+            });
+        </script>
+
+    </body>
+</html>
